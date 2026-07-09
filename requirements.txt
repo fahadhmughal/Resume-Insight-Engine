@@ -1,13 +1,20 @@
-streamlit
-pandas
-plotly
-spacy
-scikit-learn
-sentence-transformers
-keybert
-fpdf2
-pdfplumber
-python-dotenv
+# ── Core app ──────────────────────────────────────────────────────────────────
+streamlit>=1.58.0,<2.0.0
+pandas>=2.3.0,<3.0.0
+plotly>=6.8.0,<7.0.0
+python-dotenv>=1.2.0,<2.0.0
 
-# spaCy English model (small):
-# Install via: pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+# ── NLP / ML ──────────────────────────────────────────────────────────────────
+spacy>=3.8.0,<3.9.0
+sentence-transformers>=5.6.0,<6.0.0
+keybert>=0.9.0,<1.0.0
+scikit-learn>=1.7.0,<2.0.0
+
+# ── PDF I/O ───────────────────────────────────────────────────────────────────
+pdfplumber>=0.11.0,<0.12.0
+fpdf2>=2.8.0,<3.0.0
+
+# ── spaCy English model (small) ───────────────────────────────────────────────
+# Installed as a regular pip package so it is picked up in any environment,
+# including Streamlit Community Cloud, without needing a post-install step.
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl

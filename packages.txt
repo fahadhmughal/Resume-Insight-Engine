@@ -1,0 +1,5 @@
+# System-level packages required on Streamlit Community Cloud (Ubuntu 22.04).
+# pdfplumber → pypdfium2 needs no extra apt packages (bundled binary).
+# spaCy links against libgomp for OpenMP; it is usually pre-installed but
+# listing it here ensures it is always present.
+libgomp1
