@@ -45,7 +45,9 @@ def main():
         draggers=SAMPLE_DRAGGERS,
     )
 
-    output_path = os.path.join(PROJECT_ROOT, "sample_data", "test_report.pdf")
+    output_dir = os.path.join(PROJECT_ROOT, "test_artifacts")
+    os.makedirs(output_dir, exist_ok=True)
+    output_path = os.path.join(output_dir, "test_report.pdf")
     with open(output_path, "wb") as f:
         f.write(pdf_bytes)
 
@@ -53,7 +55,6 @@ def main():
     print(f"Report saved to: {output_path}")
     print(f"File size: {file_size_kb:.1f} KB")
 
-    # Sanity checks
     assert len(pdf_bytes) > 0, "PDF should not be empty."
     assert pdf_bytes[:5] == b"%PDF-", "File should start with PDF header."
     assert file_size_kb < 500, "Single-page report should be under 500 KB."

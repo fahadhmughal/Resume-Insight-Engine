@@ -9,13 +9,6 @@ sys.path.insert(0, PROJECT_ROOT)
 from core.explainer import get_score_contributors
 
 
-# ---------------------------------------------------------------------------
-# Hardcoded test data
-# ---------------------------------------------------------------------------
-
-# Simulated JD keywords (keyword, relevance_score) as KeyBERT would return.
-# This resume is a Python/data engineering profile, so data-related keywords
-# should be boosters and frontend/unrelated ones should be draggers.
 SAMPLE_JD_KEYWORDS = [
     ("python programming", 0.68),
     ("data pipelines", 0.65),
@@ -76,11 +69,9 @@ def main():
     for keyword, score in result["draggers"]:
         print(f"{keyword:<35} {score:>10.2f}")
 
-    # Sanity checks
     assert len(result["boosters"]) == 5, "Should return exactly 5 boosters."
     assert len(result["draggers"]) == 5, "Should return exactly 5 draggers."
 
-    # Boosters should have higher scores than draggers
     min_booster = min(s for _, s in result["boosters"])
     max_dragger = max(s for _, s in result["draggers"])
     assert min_booster > max_dragger, (
@@ -88,7 +79,6 @@ def main():
         f"highest dragger ({max_dragger})."
     )
 
-    # All scores in valid range
     all_scores = [s for _, s in result["boosters"]] + [s for _, s in result["draggers"]]
     for s in all_scores:
         assert 0.0 <= s <= 100.0, f"Score {s} is outside [0, 100] range."

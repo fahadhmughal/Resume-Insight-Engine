@@ -5,9 +5,7 @@ from typing import Dict, List, Tuple
 
 from fpdf import FPDF
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
+
 NAVY = (27, 42, 74)
 WHITE = (255, 255, 255)
 DARK_GREY = (74, 74, 74)
@@ -44,7 +42,6 @@ class _ReportPDF(FPDF):
     """Custom FPDF subclass for candidate reports."""
 
     def header(self):
-        # Navy header bar
         self.set_fill_color(*NAVY)
         self.rect(0, 0, 210, 28, "F")
         self.set_font("Helvetica", "B", 16)
@@ -69,34 +66,17 @@ def generate_candidate_report(
     boosters: List[Tuple[str, float]],
     draggers: List[Tuple[str, float]],
 ) -> bytes:
-    """Generate a single-page PDF report for one candidate.
-
-    Args:
-        candidate_name:  Filename or name of the candidate.
-        final_score:     Weighted composite score (0-100).
-        section_scores:  Dict mapping section name to score (0-100).
-        boosters:        List of (keyword, score) tuples for matched skills.
-        draggers:        List of (keyword, score) tuples for skill gaps.
-
-    Returns:
-        PDF file contents as bytes.
-    """
+    """Generate a single-page PDF report for one candidate."""
     pdf = _ReportPDF()
     pdf.set_auto_page_break(auto=True, margin=20)
     pdf.add_page()
     pdf.set_margins(15, 15, 15)
 
-    # -----------------------------------------------------------------------
-    # Candidate name
-    # -----------------------------------------------------------------------
     pdf.set_font("Helvetica", "B", 14)
     pdf.set_text_color(*NAVY)
     pdf.cell(0, 10, candidate_name, new_x="LMARGIN", new_y="NEXT")
     pdf.ln(2)
 
-    # -----------------------------------------------------------------------
-    # Final score
-    # -----------------------------------------------------------------------
     bg, fg = _score_color(final_score)
     pdf.set_font("Helvetica", "", 10)
     pdf.set_text_color(*MID_GREY)
@@ -108,15 +88,11 @@ def generate_candidate_report(
              new_x="LMARGIN", new_y="NEXT")
     pdf.ln(6)
 
-    # -----------------------------------------------------------------------
-    # Section score table
-    # -----------------------------------------------------------------------
     pdf.set_font("Helvetica", "B", 11)
     pdf.set_text_color(*NAVY)
     pdf.cell(0, 8, "Section Score Breakdown", new_x="LMARGIN", new_y="NEXT")
     pdf.ln(2)
 
-    # Table header
     col_w_name = 70
     col_w_score = 30
     col_w_bar = 80
@@ -128,13 +104,11 @@ def generate_candidate_report(
     pdf.cell(col_w_score, 7, "Score", align="C", fill=True, new_x="END")
     pdf.cell(col_w_bar, 7, "", fill=True, new_x="LMARGIN", new_y="NEXT")
 
-    # Table rows
     pdf.set_font("Helvetica", "", 9)
     for i, section in enumerate(SECTION_ORDER):
         score = section_scores.get(section, 0.0)
         label = SECTION_LABELS.get(section, section.title())
 
-        # Alternating row background
         if i % 2 == 0:
             pdf.set_fill_color(249, 250, 251)
         else:
@@ -147,14 +121,11 @@ def generate_candidate_report(
         pdf.set_text_color(*fg_s)
         pdf.cell(col_w_score, 7, f"{score:.1f}", align="C", fill=True, new_x="END")
 
-        # Score bar
         pdf.set_text_color(*DARK_GREY)
         y = pdf.get_y()
         x = pdf.get_x()
-        # Background
         pdf.set_fill_color(240, 242, 246)
         pdf.rect(x, y, col_w_bar, 7, "F")
-        # Filled portion
         bar_width = max(0, min(col_w_bar, col_w_bar * score / 100.0))
         pdf.set_fill_color(*bg_s)
         if bar_width > 0:
@@ -164,13 +135,9 @@ def generate_candidate_report(
 
     pdf.ln(6)
 
-    # -----------------------------------------------------------------------
-    # Boosters and Draggers side by side
-    # -----------------------------------------------------------------------
     col_width = 88
     start_y = pdf.get_y()
 
-    # -- Boosters (left column) --
     pdf.set_x(15)
     pdf.set_font("Helvetica", "B", 11)
     pdf.set_text_color(*NAVY)
@@ -197,7 +164,6 @@ def generate_candidate_report(
 
     left_end_y = pdf.get_y()
 
-    # -- Draggers (right column) --
     pdf.set_y(start_y)
     pdf.set_x(15 + col_width + 4)
     pdf.set_font("Helvetica", "B", 11)
@@ -225,19 +191,12 @@ def generate_candidate_report(
 
     right_end_y = pdf.get_y()
 
-    # Move past both columns
     pdf.set_y(max(left_end_y, right_end_y) + 4)
 
-    # -----------------------------------------------------------------------
-    # Divider line
-    # -----------------------------------------------------------------------
     pdf.set_draw_color(*LIGHT_GREY)
     pdf.line(15, pdf.get_y(), 195, pdf.get_y())
     pdf.ln(4)
 
-    # -----------------------------------------------------------------------
-    # Disclaimer
-    # -----------------------------------------------------------------------
     pdf.set_font("Helvetica", "I", 8)
     pdf.set_text_color(*MID_GREY)
     pdf.multi_cell(
@@ -248,7 +207,6 @@ def generate_candidate_report(
         "decisions.",
     )
 
-    # Output to bytes
     buf = io.BytesIO()
     pdf.output(buf)
     return buf.getvalue()

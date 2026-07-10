@@ -1,4 +1,3 @@
-# ── Python ────────────────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *$py.class
@@ -7,34 +6,25 @@ dist/
 build/
 *.egg
 
-# ── Virtual environments ───────────────────────────────────────────────────────
 venv/
 .venv/
+.venv-test/
 env/
 
-# ── IDE ───────────────────────────────────────────────────────────────────────
 .vscode/
 .idea/
 *.swp
 *.swo
 
-# ── Environment variables ──────────────────────────────────────────────────────
 .env
 .streamlit/secrets.toml
 
-# ── OS ────────────────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
 
-# ── Sample data: exclude all PDFs except the one demo sample ──────────────────
-sample_data/*.pdf
-!sample_data/sample_resume.pdf
-
-# ── Test / scratch PDFs at project root ───────────────────────────────────────
 *.pdf
-!sample_data/sample_resume.pdf
 
-# ── Uploads & build artefacts ─────────────────────────────────────────────────
+test_artifacts/
 uploads/
 *.docx
 *.tar.gz

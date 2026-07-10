@@ -11,7 +11,6 @@ def create_sample_resume(output_path: str) -> None:
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
 
-    # Name and contact
     pdf.set_font("Helvetica", "B", 18)
     pdf.cell(0, 12, "Jane Doe", ln=True, align="C")
     pdf.set_font("Helvetica", "", 10)
@@ -26,7 +25,6 @@ def create_sample_resume(output_path: str) -> None:
         pdf.ln(3)
         pdf.set_font("Helvetica", "", 10)
 
-    # Skills
     section_header("Skills")
     pdf.multi_cell(0, 5,
         "Python, Java, SQL, JavaScript, TypeScript, React, Node.js, "
@@ -36,7 +34,6 @@ def create_sample_resume(output_path: str) -> None:
     )
     pdf.ln(4)
 
-    # Experience
     section_header("Experience")
     pdf.set_font("Helvetica", "B", 11)
     pdf.cell(0, 6, "Senior Software Engineer - Acme Corp", ln=True)
@@ -64,7 +61,6 @@ def create_sample_resume(output_path: str) -> None:
     )
     pdf.ln(4)
 
-    # Education
     section_header("Education")
     pdf.set_font("Helvetica", "B", 11)
     pdf.cell(0, 6, "B.S. Computer Science - University of California, Berkeley", ln=True)
@@ -77,7 +73,6 @@ def create_sample_resume(output_path: str) -> None:
     )
     pdf.ln(4)
 
-    # Projects
     section_header("Projects")
     pdf.set_font("Helvetica", "B", 11)
     pdf.cell(0, 6, "Open Source Analytics Dashboard", ln=True)
@@ -89,7 +84,6 @@ def create_sample_resume(output_path: str) -> None:
     )
     pdf.ln(4)
 
-    # Certifications
     section_header("Certifications")
     pdf.multi_cell(0, 5,
         "AWS Certified Solutions Architect - Associate (2023)\n"
@@ -101,7 +95,8 @@ def create_sample_resume(output_path: str) -> None:
 
 
 if __name__ == "__main__":
-    out = os.path.join(os.path.dirname(__file__), "..", "sample_data", "sample_resume.pdf")
-    out = os.path.normpath(out)
+    out_dir = os.path.join(os.path.dirname(__file__), "..", "test_artifacts")
+    os.makedirs(out_dir, exist_ok=True)
+    out = os.path.normpath(os.path.join(out_dir, "sample_resume.pdf"))
     create_sample_resume(out)
     print(f"Sample resume created at: {out}")

@@ -1,4 +1,4 @@
-"""Test script for the scoring engine (hardcoded inputs, no PDF needed)."""
+"""Test script for the scoring engine."""
 
 import os
 import sys
@@ -8,10 +8,6 @@ sys.path.insert(0, PROJECT_ROOT)
 
 from core.scoring_engine import compute_section_scores, compute_final_score
 
-
-# ---------------------------------------------------------------------------
-# Hardcoded test data
-# ---------------------------------------------------------------------------
 
 SAMPLE_JD = """
 Senior Data Engineer
@@ -65,7 +61,7 @@ SAMPLE_RESUME_SECTIONS = {
         "B.S. Computer Engineering, University of Michigan (2016). "
         "Coursework: Distributed Systems, Database Systems, Machine Learning."
     ),
-    "certifications": "",  # intentionally empty to test weight redistribution
+    "certifications": "",
 }
 
 
@@ -83,7 +79,6 @@ def main():
     final_score = compute_final_score(section_scores)
     print(f"\n{'Final Score':<20} {final_score:>8.2f}")
 
-    # Sanity checks
     for section, score in section_scores.items():
         assert 0.0 <= score <= 100.0, (
             f"{section} score {score} is outside [0, 100] range."

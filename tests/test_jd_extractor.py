@@ -75,12 +75,9 @@ def main():
 
     print(f"\nTotal keyphrases returned: {len(keywords)}")
 
-    # Basic sanity checks
     assert len(keywords) > 0, "Should return at least one keyphrase."
     assert len(keywords) <= 20, "Should return at most 20 keyphrases."
 
-    phrases_lower = [p.lower() for p, _ in keywords]
-    # Scores should be in descending order
     scores = [s for _, s in keywords]
     assert scores == sorted(scores, reverse=True), "Scores should be in descending order."
 

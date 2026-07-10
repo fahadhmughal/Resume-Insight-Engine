@@ -15,7 +15,6 @@ def create_resume(output_path: str, profile: dict) -> None:
     pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
 
-    # Name
     pdf.set_font("Helvetica", "B", 18)
     pdf.cell(0, 12, profile["name"], ln=True, align="C")
     pdf.set_font("Helvetica", "", 10)
@@ -237,7 +236,7 @@ PROFILES = [
 
 
 def main():
-    output_dir = os.path.join(PROJECT_ROOT, "sample_data")
+    output_dir = os.path.join(PROJECT_ROOT, "test_artifacts")
     os.makedirs(output_dir, exist_ok=True)
 
     for profile in PROFILES:

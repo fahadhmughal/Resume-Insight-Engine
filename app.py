@@ -2,7 +2,6 @@
 
 import os
 
-# Prevent transformers from loading TensorFlow
 os.environ.setdefault("TRANSFORMERS_NO_TF", "1")
 os.environ.setdefault("USE_TF", "0")
 
@@ -22,9 +21,6 @@ from core.scoring_engine import compute_section_scores, compute_final_score
 from core.explainer import get_score_contributors
 from services.report_generator import generate_candidate_report
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
 NAVY       = "#1B2A4A"
 DARK_GREY  = "#374151"
 MID_GREY   = "#6B7280"
@@ -42,10 +38,8 @@ SECTION_LABELS = {
 }
 
 
-# ---------------------------------------------------------------------------
-# Page config and global styles
-# ---------------------------------------------------------------------------
 def configure_page():
+    """Set page config and inject global CSS."""
     st.set_page_config(
         page_title="Resume Insight Engine",
         layout="wide",
@@ -54,12 +48,10 @@ def configure_page():
 
     st.markdown("""
     <style>
-        /* ── Streamlit chrome ───────────────────────────────────────────────── */
         #MainMenu {visibility: hidden;}
         footer     {visibility: hidden;}
         header     {visibility: hidden;}
 
-        /* ── Base typography ────────────────────────────────────────────────── */
         html, body, [class*="css"] {
             font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
             color: #374151;
@@ -69,17 +61,32 @@ def configure_page():
             padding-bottom: 2rem;
         }
 
-        /* ── Sidebar ────────────────────────────────────────────────────────── */
         [data-testid="stSidebar"] {
             background-color: #FFFFFF;
             border-right: 2px solid #E5E7EB;
         }
-        /* Sidebar inner padding */
         [data-testid="stSidebar"] > div:first-child {
             padding: 1.2rem 1.2rem 1.5rem 1.2rem;
         }
 
-        /* Sidebar header block */
+        [data-testid="stSidebar"] textarea {
+            background-color: #FFFFFF !important;
+            color: #374151 !important;
+            border: 1.5px solid #D1D5DB !important;
+            border-radius: 6px !important;
+            font-size: 0.88rem !important;
+            line-height: 1.5 !important;
+            padding: 0.65rem 0.75rem !important;
+        }
+        [data-testid="stSidebar"] textarea:focus {
+            border-color: #1B2A4A !important;
+            box-shadow: 0 0 0 2px rgba(27, 42, 74, 0.12) !important;
+        }
+        [data-testid="stSidebar"] textarea::placeholder {
+            color: #9CA3AF !important;
+            opacity: 1 !important;
+        }
+
         .sb-header {
             border-bottom: 1px solid #E5E7EB;
             padding-bottom: 0.9rem;
@@ -97,7 +104,6 @@ def configure_page():
             margin-top: 0.1rem;
         }
 
-        /* Sidebar field label */
         .sb-label {
             font-size: 0.72rem;
             font-weight: 700;
@@ -118,23 +124,24 @@ def configure_page():
             line-height: 1.4;
         }
 
-        /* ── Page header ────────────────────────────────────────────────────── */
         .page-header {
-            margin-bottom: 1.4rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #E5E7EB;
+            margin-bottom: 1.6rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 2px solid #E5E7EB;
         }
         .page-title {
-            font-size: 1.55rem;
+            font-size: 2rem;
             font-weight: 800;
             color: #1B2A4A;
-            letter-spacing: -0.025em;
-            margin: 0 0 0.2rem 0;
+            letter-spacing: -0.03em;
+            margin: 0 0 0.35rem 0;
+            line-height: 1.2;
         }
         .page-subtitle {
-            font-size: 0.88rem;
+            font-size: 0.95rem;
             color: #6B7280;
             margin: 0;
+            line-height: 1.5;
         }
         .page-tag {
             display: inline-block;
@@ -149,7 +156,6 @@ def configure_page():
             letter-spacing: 0.03em;
         }
 
-        /* ── Section headings ───────────────────────────────────────────────── */
         .sec-heading {
             font-size: 0.9rem;
             font-weight: 700;
@@ -162,7 +168,6 @@ def configure_page():
             line-height: 1;
         }
 
-        /* ── Metric cards ───────────────────────────────────────────────────── */
         .metric-card {
             background: #FFFFFF;
             border: 1px solid #E5E7EB;
@@ -190,7 +195,6 @@ def configure_page():
             margin: 0.1rem 0 0 0;
         }
 
-        /* ── Score badge ────────────────────────────────────────────────────── */
         .score-badge {
             display: inline-block;
             padding: 0.2rem 0.6rem;
@@ -202,7 +206,6 @@ def configure_page():
         .score-mid  { background: #FEF3C7; color: #92400E; }
         .score-low  { background: #FEE2E2; color: #991B1B; }
 
-        /* ── Results table ──────────────────────────────────────────────────── */
         .results-table {
             width: 100%;
             border-collapse: collapse;
@@ -227,7 +230,6 @@ def configure_page():
             background-color: #F9FAFB;
         }
 
-        /* ── Contributor items ──────────────────────────────────────────────── */
         .contrib-header {
             font-size: 0.78rem;
             font-weight: 700;
@@ -247,7 +249,6 @@ def configure_page():
             padding: 0.15rem 0;
         }
 
-        /* ── Download link (data-URI) ───────────────────────────────────────── */
         .dl-link {
             display: inline-block;
             padding: 0.4rem 1rem;
@@ -280,7 +281,6 @@ def configure_page():
             background: #F9FAFB;
         }
 
-        /* ── Getting-started grid ───────────────────────────────────────────── */
         .gs-wrap {
             border: 1px solid #E5E7EB;
             border-radius: 8px;
@@ -346,8 +346,14 @@ def configure_page():
             color: #4B5563;
             line-height: 1.5;
         }
+        .gs-info ul {
+            margin: 0.4rem 0 0 0;
+            padding-left: 1.2rem;
+        }
+        .gs-info li {
+            margin-bottom: 0.2rem;
+        }
 
-        /* ── Misc ───────────────────────────────────────────────────────────── */
         .validation-msg { color: #991B1B; font-size: 0.88rem; padding: 0.4rem 0; }
         .status-text    { color: #6B7280; font-size: 0.88rem; }
         .section-label  { font-size: 0.82rem; font-weight: 600; color: #374151; }
@@ -355,10 +361,8 @@ def configure_page():
     """, unsafe_allow_html=True)
 
 
-# ---------------------------------------------------------------------------
-# Helper functions
-# ---------------------------------------------------------------------------
 def score_css_class(score: float) -> str:
+    """Return CSS class name based on score threshold."""
     if score >= 70:
         return "score-high"
     elif score >= 50:
@@ -367,11 +371,7 @@ def score_css_class(score: float) -> str:
 
 
 def _pdf_download_anchor(data: bytes, filename: str, label: str, css: str = "dl-link") -> str:
-    """
-    Return an <a> tag that downloads a PDF via a base64 data-URI.
-    This completely bypasses Streamlit's media server, so download managers
-    like IDM cannot intercept and pre-download the file automatically.
-    """
+    """Return an <a> tag that downloads a PDF via a base64 data-URI."""
     b64 = base64.b64encode(data).decode()
     href = f"data:application/pdf;base64,{b64}"
     return f'<a href="{href}" download="{filename}" class="{css}">{label}</a>'
@@ -515,9 +515,6 @@ def make_missing_skills_chart(results: List[Dict[str, Any]]) -> go.Figure:
     return fig
 
 
-# ---------------------------------------------------------------------------
-# Processing pipeline
-# ---------------------------------------------------------------------------
 def process_resumes(jd_text: str, uploaded_files: list) -> List[Dict[str, Any]]:
     """Run the full analysis pipeline on all uploaded resumes."""
     results = []
@@ -535,25 +532,25 @@ def process_resumes(jd_text: str, uploaded_files: list) -> List[Dict[str, Any]]:
         )
 
         result = {
-            "filename":      filename,
-            "final_score":   0.0,
+            "filename":       filename,
+            "final_score":    0.0,
             "section_scores": {},
-            "sections":      {},
-            "boosters":      [],
-            "draggers":      [],
-            "error":         None,
+            "sections":       {},
+            "boosters":       [],
+            "draggers":       [],
+            "error":          None,
         }
 
         try:
-            text             = extract_text_from_pdf(uploaded_file)
-            sections         = split_into_sections(text)
+            text     = extract_text_from_pdf(uploaded_file)
+            sections = split_into_sections(text)
             result["sections"] = sections
 
             section_scores           = compute_section_scores(jd_text, sections)
             result["section_scores"] = section_scores
 
-            final_score            = compute_final_score(section_scores)
-            result["final_score"]  = final_score
+            final_score           = compute_final_score(section_scores)
+            result["final_score"] = final_score
 
             contributors       = get_score_contributors(jd_keywords, text, top_k=5)
             result["boosters"] = contributors["boosters"]
@@ -574,48 +571,45 @@ def process_resumes(jd_text: str, uploaded_files: list) -> List[Dict[str, Any]]:
     return results
 
 
-# ---------------------------------------------------------------------------
-# UI Components
-# ---------------------------------------------------------------------------
 def render_sidebar():
-    """Render the sidebar inputs."""
+    """Render the sidebar inputs and return (jd_text, uploaded_files, run_clicked)."""
     with st.sidebar:
-        # App identity
-        st.markdown(
-            '<div class="sb-header">'
-            '<div class="sb-app-name">Resume Insight Engine</div>'
-            '<div class="sb-app-tag">v1.0 &nbsp;&middot;&nbsp; AI-Powered Screening</div>'
-            '</div>',
-            unsafe_allow_html=True,
-        )
+        with st.container():
+            st.markdown(
+                '<div class="sb-header">'
+                '<div class="sb-app-name">Resume Insight Engine</div>'
+                '<div class="sb-app-tag">v1.0 &nbsp;&middot;&nbsp; AI-Powered Screening</div>'
+                '</div>',
+                unsafe_allow_html=True,
+            )
 
-        # Job description
-        st.markdown('<p class="sb-label">Job Description</p>', unsafe_allow_html=True)
-        jd_text = st.text_area(
-            "Job description",
-            height=230,
-            placeholder="Paste the full job description here...",
-            label_visibility="collapsed",
-        )
-        st.markdown(
-            '<p class="sb-hint">Include required skills, tools, and responsibilities for best results.</p>',
-            unsafe_allow_html=True,
-        )
+        with st.container():
+            st.markdown('<p class="sb-label">Job Description</p>', unsafe_allow_html=True)
+            jd_text = st.text_area(
+                "Job description",
+                height=230,
+                placeholder="Paste the full job description here...",
+                label_visibility="collapsed",
+            )
+            st.markdown(
+                '<p class="sb-hint">Include required skills, tools, and responsibilities for best results.</p>',
+                unsafe_allow_html=True,
+            )
 
         st.markdown('<hr class="sb-divider">', unsafe_allow_html=True)
 
-        # Resume upload
-        st.markdown('<p class="sb-label">Resume PDFs</p>', unsafe_allow_html=True)
-        uploaded_files = st.file_uploader(
-            "Upload resume PDFs",
-            type=["pdf"],
-            accept_multiple_files=True,
-            label_visibility="collapsed",
-        )
-        st.markdown(
-            '<p class="sb-hint">Supports multiple PDFs. Max 5 MB per file.</p>',
-            unsafe_allow_html=True,
-        )
+        with st.container():
+            st.markdown('<p class="sb-label">Resume PDFs</p>', unsafe_allow_html=True)
+            uploaded_files = st.file_uploader(
+                "Upload resume PDFs",
+                type=["pdf"],
+                accept_multiple_files=True,
+                label_visibility="collapsed",
+            )
+            st.markdown(
+                '<p class="sb-hint">Supports multiple PDFs. Max 5 MB per file.</p>',
+                unsafe_allow_html=True,
+            )
 
         st.markdown("<br>", unsafe_allow_html=True)
         run_clicked = st.button(
@@ -629,61 +623,66 @@ def render_sidebar():
 
 def render_header():
     """Render the page header."""
-    st.markdown(
-        '<div class="page-header">'
-        '<p class="page-title">Resume Insight Engine'
-        '<span class="page-tag">AI-Powered</span>'
-        '</p>'
-        '<p class="page-subtitle">'
-        'Paste a job description, upload candidate resumes, and get instant ranked results with skill gap analysis.'
-        '</p>'
-        '</div>',
-        unsafe_allow_html=True,
-    )
+    with st.container():
+        st.markdown(
+            '<div class="page-header">'
+            '<h1 class="page-title">Resume Insight Engine'
+            '<span class="page-tag">AI-Powered</span>'
+            '</h1>'
+            '<p class="page-subtitle">'
+            'Paste a job description, upload candidate resumes, and get instant ranked results with skill gap analysis.'
+            '</p>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
 
 
 def render_empty_state():
     """Render the getting-started view."""
-    st.markdown(
-        '<div class="gs-wrap">'
-        '<p class="gs-title">Ready to Screen Candidates</p>'
-        '<p class="gs-desc">Complete the steps in the sidebar, then click Run Analysis.</p>'
-        '<div class="gs-grid">'
+    with st.container():
+        st.markdown(
+            '<div class="gs-wrap">'
+            '<p class="gs-title">Ready to Screen Candidates</p>'
+            '<p class="gs-desc">Complete the steps in the sidebar, then click Run Analysis.</p>'
+            '<div class="gs-grid">'
 
-        '<div class="gs-card">'
-        '<div class="gs-num">1</div>'
-        '<p class="gs-step-title">Paste Job Description</p>'
-        '<p class="gs-step-desc">Add the full job description text in the left panel.</p>'
-        '</div>'
+            '<div class="gs-card">'
+            '<div class="gs-num">1</div>'
+            '<p class="gs-step-title">Paste Job Description</p>'
+            '<p class="gs-step-desc">Add the full job description text in the left panel.</p>'
+            '</div>'
 
-        '<div class="gs-card">'
-        '<div class="gs-num">2</div>'
-        '<p class="gs-step-title">Upload Resumes</p>'
-        '<p class="gs-step-desc">Upload one or more candidate PDF files.</p>'
-        '</div>'
+            '<div class="gs-card">'
+            '<div class="gs-num">2</div>'
+            '<p class="gs-step-title">Upload Resumes</p>'
+            '<p class="gs-step-desc">Upload one or more candidate PDF files.</p>'
+            '</div>'
 
-        '<div class="gs-card">'
-        '<div class="gs-num">3</div>'
-        '<p class="gs-step-title">Run Analysis</p>'
-        '<p class="gs-step-desc">Click the Run Analysis button to start.</p>'
-        '</div>'
+            '<div class="gs-card">'
+            '<div class="gs-num">3</div>'
+            '<p class="gs-step-title">Run Analysis</p>'
+            '<p class="gs-step-desc">Click the Run Analysis button to start.</p>'
+            '</div>'
 
-        '<div class="gs-card">'
-        '<div class="gs-num">4</div>'
-        '<p class="gs-step-title">Review Results</p>'
-        '<p class="gs-step-desc">View ranked scores, charts, and download reports.</p>'
-        '</div>'
+            '<div class="gs-card">'
+            '<div class="gs-num">4</div>'
+            '<p class="gs-step-title">Review Results</p>'
+            '<p class="gs-step-desc">View ranked scores, charts, and download reports.</p>'
+            '</div>'
 
-        '</div>'
-        '<div class="gs-info">'
-        '<strong>How scoring works:</strong> Each resume is parsed into sections (Skills, Experience, '
-        'Projects, Education, Certifications). Sections are embedded with a Sentence-Transformer '
-        '(all-MiniLM-L6-v2) and compared to the job description via cosine similarity. '
-        'Final score weights: Skills 45% &middot; Experience 35% &middot; Projects 10% &middot; Education 8% &middot; Certifications 2%.'
-        '</div>'
-        '</div>',
-        unsafe_allow_html=True,
-    )
+            '</div>'
+            '<div class="gs-info">'
+            '<strong>How scoring works:</strong>'
+            '<ul>'
+            '<li>Each resume is parsed into sections: Skills, Experience, Projects, Education, and Certifications</li>'
+            '<li>Sections are embedded using a Sentence-Transformer model (all-MiniLM-L6-v2)</li>'
+            '<li>Each section embedding is compared to the job description via cosine similarity</li>'
+            '<li>Final score weights: Skills 45%, Experience 35%, Projects 10%, Education 8%, Certifications 2%</li>'
+            '</ul>'
+            '</div>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
 
 
 def render_results(results: List[Dict[str, Any]]):
@@ -691,49 +690,48 @@ def render_results(results: List[Dict[str, Any]]):
     valid_results   = [r for r in results if r["error"] is None]
     errored_results = [r for r in results if r["error"] is not None]
 
-    # ── Summary metrics ──────────────────────────────────────────────────────
     if valid_results:
         avg_score = sum(r["final_score"] for r in valid_results) / len(valid_results)
         top_score = max(r["final_score"] for r in valid_results)
         above_70  = sum(1 for r in valid_results if r["final_score"] >= 70)
 
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
-            st.markdown(
-                '<div class="metric-card">'
-                '<p class="metric-label">Candidates Analysed</p>'
-                f'<p class="metric-value">{len(valid_results)}</p>'
-                '</div>',
-                unsafe_allow_html=True,
-            )
-        with col2:
-            st.markdown(
-                '<div class="metric-card">'
-                '<p class="metric-label">Average Score</p>'
-                f'<p class="metric-value">{avg_score:.1f}</p>'
-                '</div>',
-                unsafe_allow_html=True,
-            )
-        with col3:
-            st.markdown(
-                '<div class="metric-card">'
-                '<p class="metric-label">Highest Score</p>'
-                f'<p class="metric-value">{top_score:.1f}</p>'
-                '</div>',
-                unsafe_allow_html=True,
-            )
-        with col4:
-            st.markdown(
-                '<div class="metric-card">'
-                '<p class="metric-label">Strong Matches (70+)</p>'
-                f'<p class="metric-value">{above_70}</p>'
-                '</div>',
-                unsafe_allow_html=True,
-            )
+        with st.container():
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.markdown(
+                    '<div class="metric-card">'
+                    '<p class="metric-label">Candidates Analysed</p>'
+                    f'<p class="metric-value">{len(valid_results)}</p>'
+                    '</div>',
+                    unsafe_allow_html=True,
+                )
+            with col2:
+                st.markdown(
+                    '<div class="metric-card">'
+                    '<p class="metric-label">Average Score</p>'
+                    f'<p class="metric-value">{avg_score:.1f}</p>'
+                    '</div>',
+                    unsafe_allow_html=True,
+                )
+            with col3:
+                st.markdown(
+                    '<div class="metric-card">'
+                    '<p class="metric-label">Highest Score</p>'
+                    f'<p class="metric-value">{top_score:.1f}</p>'
+                    '</div>',
+                    unsafe_allow_html=True,
+                )
+            with col4:
+                st.markdown(
+                    '<div class="metric-card">'
+                    '<p class="metric-label">Strong Matches (70+)</p>'
+                    f'<p class="metric-value">{above_70}</p>'
+                    '</div>',
+                    unsafe_allow_html=True,
+                )
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-    # ── Errors ───────────────────────────────────────────────────────────────
     for r in errored_results:
         st.markdown(
             f'<div class="card" style="border-color:#FCA5A5;">'
@@ -750,117 +748,108 @@ def render_results(results: List[Dict[str, Any]]):
         )
         return
 
-    # ── Ranked results table ─────────────────────────────────────────────────
-    st.markdown('<div class="sec-heading">Ranked Results</div>', unsafe_allow_html=True)
-    st.markdown(build_results_table_html(valid_results), unsafe_allow_html=True)
+    with st.container():
+        st.markdown('<div class="sec-heading">Ranked Results</div>', unsafe_allow_html=True)
+        st.markdown(build_results_table_html(valid_results), unsafe_allow_html=True)
 
-    # CSV export via data-URI (bypasses Streamlit media server / IDM)
-    csv_data    = results_to_csv(valid_results)
-    csv_anchor  = _csv_download_anchor(csv_data, "resume_insight_results.csv", "Export as CSV")
-    st.markdown(f"<br>{csv_anchor}", unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # ── Charts ───────────────────────────────────────────────────────────────
-    st.markdown('<div class="sec-heading">Score Analysis</div>', unsafe_allow_html=True)
-
-    # Modebar: keep zoom/pan/reset but remove the PNG download button
-    _modebar_cfg = {
-        "modeBarButtonsToRemove": ["toImage"],
-        "displaylogo": False,
-    }
-    chart_col1, chart_col2 = st.columns(2)
-    with chart_col1:
-        fig_scores = make_candidate_chart(valid_results)
-        st.plotly_chart(fig_scores, use_container_width=True, config=_modebar_cfg)
-
-    with chart_col2:
-        fig_missing = make_missing_skills_chart(valid_results)
-        if fig_missing:
-            st.plotly_chart(fig_missing, use_container_width=True, config=_modebar_cfg)
-        else:
-            st.markdown('<p class="status-text">No skill gap data available.</p>', unsafe_allow_html=True)
+        csv_data   = results_to_csv(valid_results)
+        csv_anchor = _csv_download_anchor(csv_data, "resume_insight_results.csv", "Export as CSV")
+        st.markdown(f"<br>{csv_anchor}", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ── Per-candidate detail views ───────────────────────────────────────────
-    st.markdown('<div class="sec-heading">Candidate Details</div>', unsafe_allow_html=True)
+    with st.container():
+        st.markdown('<div class="sec-heading">Score Analysis</div>', unsafe_allow_html=True)
 
-    for rank, r in enumerate(valid_results, 1):
-        badge_cls   = score_css_class(r["final_score"])
-        rank_label  = f"#{rank}"
-        expander_label = f"{rank_label}  {r['filename']}  —  Score: {r['final_score']:.1f} / 100"
+        _modebar_cfg = {
+            "modeBarButtonsToRemove": ["toImage"],
+            "displaylogo": False,
+        }
+        chart_col1, chart_col2 = st.columns(2)
+        with chart_col1:
+            fig_scores = make_candidate_chart(valid_results)
+            st.plotly_chart(fig_scores, use_container_width=True, config=_modebar_cfg)
 
-        with st.expander(expander_label):
-            # Section score breakdown
-            detail_cols = st.columns(len(SECTION_ORDER))
-            for col, section in zip(detail_cols, SECTION_ORDER):
-                val   = r["section_scores"].get(section, 0.0)
-                s_cls = score_css_class(val)
-                with col:
-                    st.markdown(
-                        f'<p class="metric-label">{SECTION_LABELS[section]}</p>'
-                        f'<p><span class="score-badge {s_cls}">{val:.1f}</span></p>',
-                        unsafe_allow_html=True,
-                    )
-
-            st.markdown("<br>", unsafe_allow_html=True)
-
-            # Boosters and draggers
-            contrib_col1, contrib_col2 = st.columns(2)
-            with contrib_col1:
-                st.markdown('<p class="contrib-header">Matched Skills</p>', unsafe_allow_html=True)
-                if r["boosters"]:
-                    for kw, score in r["boosters"]:
-                        st.markdown(
-                            f'<p class="booster-item">+ {kw} &nbsp;<span style="color:#9CA3AF;font-size:0.78rem;">({score:.1f})</span></p>',
-                            unsafe_allow_html=True,
-                        )
-                else:
-                    st.markdown('<p class="status-text">No data available.</p>', unsafe_allow_html=True)
-
-            with contrib_col2:
-                st.markdown('<p class="contrib-header">Skill Gaps</p>', unsafe_allow_html=True)
-                if r["draggers"]:
-                    for kw, score in r["draggers"]:
-                        st.markdown(
-                            f'<p class="dragger-item">- {kw} &nbsp;<span style="color:#9CA3AF;font-size:0.78rem;">({score:.1f})</span></p>',
-                            unsafe_allow_html=True,
-                        )
-                else:
-                    st.markdown('<p class="status-text">No data available.</p>', unsafe_allow_html=True)
-
-            # ── Report download ───────────────────────────────────────────────
-            st.markdown("<br>", unsafe_allow_html=True)
-            safe_name = r["filename"].replace(".pdf", "").replace(" ", "_")
-            state_key = f"report_pdf_{safe_name}"
-
-            if state_key not in st.session_state:
-                # Step 1: generate on demand (prevents IDM from auto-intercepting)
-                if st.button("Generate Report", key=f"gen_report_{safe_name}"):
-                    with st.spinner("Generating PDF report..."):
-                        st.session_state[state_key] = generate_candidate_report(
-                            candidate_name=r["filename"],
-                            final_score=r["final_score"],
-                            section_scores=r["section_scores"],
-                            boosters=r["boosters"],
-                            draggers=r["draggers"],
-                        )
-                    st.rerun()
+        with chart_col2:
+            fig_missing = make_missing_skills_chart(valid_results)
+            if fig_missing:
+                st.plotly_chart(fig_missing, use_container_width=True, config=_modebar_cfg)
             else:
-                # Step 2: serve via base64 data-URI anchor (IDM-proof)
-                pdf_anchor = _pdf_download_anchor(
-                    st.session_state[state_key],
-                    f"report_{safe_name}.pdf",
-                    "Download Report PDF",
-                )
-                st.markdown(pdf_anchor, unsafe_allow_html=True)
+                st.markdown('<p class="status-text">No skill gap data available.</p>', unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    with st.container():
+        st.markdown('<div class="sec-heading">Candidate Details</div>', unsafe_allow_html=True)
+
+        for rank, r in enumerate(valid_results, 1):
+            badge_cls      = score_css_class(r["final_score"])
+            rank_label     = f"#{rank}"
+            expander_label = f"{rank_label}  {r['filename']}  --  Score: {r['final_score']:.1f} / 100"
+
+            with st.expander(expander_label):
+                detail_cols = st.columns(len(SECTION_ORDER))
+                for col, section in zip(detail_cols, SECTION_ORDER):
+                    val   = r["section_scores"].get(section, 0.0)
+                    s_cls = score_css_class(val)
+                    with col:
+                        st.markdown(
+                            f'<p class="metric-label">{SECTION_LABELS[section]}</p>'
+                            f'<p><span class="score-badge {s_cls}">{val:.1f}</span></p>',
+                            unsafe_allow_html=True,
+                        )
+
+                st.markdown("<br>", unsafe_allow_html=True)
+
+                contrib_col1, contrib_col2 = st.columns(2)
+                with contrib_col1:
+                    st.markdown('<p class="contrib-header">Matched Skills</p>', unsafe_allow_html=True)
+                    if r["boosters"]:
+                        for kw, score in r["boosters"]:
+                            st.markdown(
+                                f'<p class="booster-item">+ {kw} &nbsp;<span style="color:#9CA3AF;font-size:0.78rem;">({score:.1f})</span></p>',
+                                unsafe_allow_html=True,
+                            )
+                    else:
+                        st.markdown('<p class="status-text">No data available.</p>', unsafe_allow_html=True)
+
+                with contrib_col2:
+                    st.markdown('<p class="contrib-header">Skill Gaps</p>', unsafe_allow_html=True)
+                    if r["draggers"]:
+                        for kw, score in r["draggers"]:
+                            st.markdown(
+                                f'<p class="dragger-item">- {kw} &nbsp;<span style="color:#9CA3AF;font-size:0.78rem;">({score:.1f})</span></p>',
+                                unsafe_allow_html=True,
+                            )
+                    else:
+                        st.markdown('<p class="status-text">No data available.</p>', unsafe_allow_html=True)
+
+                st.markdown("<br>", unsafe_allow_html=True)
+                safe_name = r["filename"].replace(".pdf", "").replace(" ", "_")
+                state_key = f"report_pdf_{safe_name}"
+
+                if state_key not in st.session_state:
+                    if st.button("Generate Report", key=f"gen_report_{safe_name}"):
+                        with st.spinner("Generating PDF report..."):
+                            st.session_state[state_key] = generate_candidate_report(
+                                candidate_name=r["filename"],
+                                final_score=r["final_score"],
+                                section_scores=r["section_scores"],
+                                boosters=r["boosters"],
+                                draggers=r["draggers"],
+                            )
+                        st.rerun()
+                else:
+                    pdf_anchor = _pdf_download_anchor(
+                        st.session_state[state_key],
+                        f"report_{safe_name}.pdf",
+                        "Download Report PDF",
+                    )
+                    st.markdown(pdf_anchor, unsafe_allow_html=True)
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
 def main():
+    """Application entry point."""
     configure_page()
     render_header()
 
@@ -888,7 +877,6 @@ def main():
             results = process_resumes(jd_text, uploaded_files)
         st.session_state.results = results
 
-        # Clear cached report PDFs for the new analysis run
         for _k in [k for k in st.session_state if k.startswith("report_pdf_")]:
             del st.session_state[_k]
 

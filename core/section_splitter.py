@@ -5,7 +5,6 @@ from typing import Dict
 
 import spacy
 
-# Lazy-loaded spaCy model
 _nlp = None
 
 
@@ -17,8 +16,6 @@ def _get_nlp():
     return _nlp
 
 
-# Canonical section names and the header keywords that map to each one.
-# All keywords are compared case-insensitively.
 SECTION_KEYWORDS: Dict[str, list] = {
     "skills": [
         "skills",
@@ -65,7 +62,6 @@ SECTION_KEYWORDS: Dict[str, list] = {
     ],
 }
 
-# Build a flat lookup: normalised keyword -> canonical section name
 _KEYWORD_TO_SECTION: Dict[str, str] = {}
 for section, keywords in SECTION_KEYWORDS.items():
     for kw in keywords:
@@ -75,21 +71,12 @@ for section, keywords in SECTION_KEYWORDS.items():
 def _is_header_line(line: str) -> str | None:
     """Check whether a line looks like a section header.
 
-    A header line is one whose meaningful content (after stripping
-    punctuation, numbering, and whitespace) matches a known keyword.
-
-    Args:
-        line: A single line of text.
-
-    Returns:
-        The canonical section name if the line is a header, else None.
+    Returns the canonical section name if the line is a header, else None.
     """
-    # Strip the line
     cleaned = line.strip()
     if not cleaned:
         return None
 
-    # Remove common decorations: leading/trailing dashes, colons, pipes, numbers
     cleaned = re.sub(r"^[\d.\-|:]+", "", cleaned)
     cleaned = re.sub(r"[\-|:]+$", "", cleaned)
     cleaned = cleaned.strip()
@@ -102,22 +89,11 @@ def _is_header_line(line: str) -> str | None:
 
 
 def _segment_with_spacy(text: str) -> str:
-    """Use spaCy sentence segmentation to produce clean sentence-separated text.
-
-    This improves readability of section content that was extracted from PDF
-    layout where line breaks don't necessarily correspond to sentence ends.
-
-    Args:
-        text: Raw section text.
-
-    Returns:
-        Text with sentences separated by single newlines.
-    """
+    """Use spaCy sentence segmentation to produce clean sentence-separated text."""
     if not text.strip():
         return ""
 
     nlp = _get_nlp()
-    # Limit to 100 000 chars to stay within spaCy defaults
     truncated = text[:100_000]
     doc = nlp(truncated)
     sentences = [sent.text.strip() for sent in doc.sents if sent.text.strip()]
@@ -127,23 +103,12 @@ def _segment_with_spacy(text: str) -> str:
 def split_into_sections(text: str) -> Dict[str, str]:
     """Split resume text into canonical sections.
 
-    Scans the text line-by-line for section headers. Everything between
-    one header and the next (or end of text) is assigned to that section.
-    Content that appears before the first recognised header is discarded
-    (it is typically the candidate's name / contact info).
+    Scans the text line-by-line for section headers. Content between
+    one header and the next is assigned to that section. Content before
+    the first header is discarded (typically name/contact info).
 
-    Each section's content is post-processed with spaCy sentence
-    segmentation for cleaner output.
-
-    Args:
-        text: Plain-text resume content (as returned by extract_text_from_pdf).
-
-    Returns:
-        A dict with keys: skills, experience, education, projects,
-        certifications. Values are the section text (or empty string if
-        that section was not found).
+    Each section is post-processed with spaCy sentence segmentation.
     """
-    # Initialise all sections as empty
     result: Dict[str, str] = {section: "" for section in SECTION_KEYWORDS}
 
     lines = text.split("\n")
@@ -153,7 +118,6 @@ def split_into_sections(text: str) -> Dict[str, str]:
     for line in lines:
         detected = _is_header_line(line)
         if detected is not None:
-            # Flush accumulated lines into the previous section
             if current_section is not None:
                 raw = "\n".join(current_lines).strip()
                 result[current_section] = _segment_with_spacy(raw)
@@ -163,7 +127,6 @@ def split_into_sections(text: str) -> Dict[str, str]:
             if current_section is not None:
                 current_lines.append(line)
 
-    # Flush the last section
     if current_section is not None:
         raw = "\n".join(current_lines).strip()
         result[current_section] = _segment_with_spacy(raw)
