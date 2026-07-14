@@ -7,10 +7,11 @@ font = "sans serif"
 
 [server]
 headless = true
+maxUploadSize = 5
 
 [browser]
 gatherUsageStats = false
 
 [ui]
-hideTopBar = true
+hideTopBar = false
 hideSidebarNav = false

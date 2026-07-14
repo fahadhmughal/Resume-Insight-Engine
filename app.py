@@ -50,7 +50,7 @@ def configure_page():
     <style>
         #MainMenu {visibility: hidden;}
         footer     {visibility: hidden;}
-        header     {visibility: hidden;}
+        header     {visibility: visible;}
 
         html, body, [class*="css"] {
             font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
@@ -90,7 +90,7 @@ def configure_page():
         .sb-header {
             border-bottom: 1px solid #E5E7EB;
             padding-bottom: 0.9rem;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1rem;
         }
         .sb-app-name {
             font-size: 0.95rem;
@@ -101,7 +101,7 @@ def configure_page():
         .sb-app-tag {
             font-size: 0.72rem;
             color: #9CA3AF;
-            margin-top: 0.1rem;
+            margin-top: 0.15rem;
         }
 
         .sb-label {
@@ -125,8 +125,8 @@ def configure_page():
         }
 
         .page-header {
-            margin-bottom: 1.6rem;
-            padding-bottom: 1.2rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.9rem;
             border-bottom: 2px solid #E5E7EB;
         }
         .page-title {
@@ -134,7 +134,7 @@ def configure_page():
             font-weight: 800;
             color: #1B2A4A;
             letter-spacing: -0.03em;
-            margin: 0 0 0.35rem 0;
+            margin: 0 0 0.2rem 0;
             line-height: 1.2;
         }
         .page-subtitle {
@@ -142,18 +142,6 @@ def configure_page():
             color: #6B7280;
             margin: 0;
             line-height: 1.5;
-        }
-        .page-tag {
-            display: inline-block;
-            background: #EEF2FF;
-            color: #4338CA;
-            font-size: 0.72rem;
-            font-weight: 600;
-            padding: 0.18rem 0.6rem;
-            border-radius: 20px;
-            margin-left: 0.6rem;
-            vertical-align: middle;
-            letter-spacing: 0.03em;
         }
 
         .sec-heading {
@@ -283,57 +271,68 @@ def configure_page():
 
         .gs-wrap {
             border: 1px solid #E5E7EB;
-            border-radius: 8px;
-            padding: 1.8rem;
+            border-radius: 6px;
+            padding: 1.4rem;
             background: #FFFFFF;
         }
         .gs-title {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #1B2A4A;
-            margin: 0 0 0.3rem 0;
-        }
-        .gs-desc {
-            font-size: 0.85rem;
-            color: #6B7280;
-            margin: 0 0 1.4rem 0;
-        }
-        .gs-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-        }
-        .gs-card {
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
-            border-radius: 6px;
-            padding: 1.1rem 1rem;
-            text-align: center;
-        }
-        .gs-num {
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            background: #1B2A4A;
-            color: #FFFFFF;
-            font-size: 0.78rem;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 0.6rem auto;
-        }
-        .gs-step-title {
-            font-size: 0.85rem;
+            font-size: 1rem;
             font-weight: 700;
             color: #1B2A4A;
             margin: 0 0 0.25rem 0;
         }
+        .gs-desc {
+            font-size: 0.85rem;
+            color: #6B7280;
+            margin: 0 0 1rem 0;
+            line-height: 1.45;
+        }
+        .gs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 0.85rem;
+        }
+        .gs-card {
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 4px;
+            padding: 0.95rem 0.95rem 1rem 0.95rem;
+            text-align: left;
+            box-shadow: none;
+        }
+        .gs-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.1rem;
+            padding: 0.12rem 0.45rem;
+            border: 1px solid #D1D5DB;
+            border-radius: 3px;
+            background: #FFFFFF;
+            color: #1B2A4A;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            margin: 0 0 0.55rem 0;
+        }
+        .gs-step-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #1B2A4A;
+            margin: 0 0 0.25rem 0;
+            line-height: 1.3;
+            word-break: normal;
+            overflow-wrap: normal;
+            hyphens: none;
+        }
         .gs-step-desc {
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             color: #6B7280;
             line-height: 1.4;
             margin: 0;
+            word-break: normal;
+            overflow-wrap: normal;
+            hyphens: none;
         }
         .gs-info {
             margin-top: 1.2rem;
@@ -352,6 +351,24 @@ def configure_page():
         }
         .gs-info li {
             margin-bottom: 0.2rem;
+        }
+
+        @media (max-width: 1100px) {
+            .gs-grid {
+                grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+            }
+        }
+
+        @media (max-width: 780px) {
+            .page-title {
+                font-size: 1.7rem;
+            }
+            .gs-wrap {
+                padding: 1.15rem;
+            }
+            .gs-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .validation-msg { color: #991B1B; font-size: 0.88rem; padding: 0.4rem 0; }
@@ -578,7 +595,7 @@ def render_sidebar():
             st.markdown(
                 '<div class="sb-header">'
                 '<div class="sb-app-name">Resume Insight Engine</div>'
-                '<div class="sb-app-tag">v1.0 &nbsp;&middot;&nbsp; AI-Powered Screening</div>'
+                '<div class="sb-app-tag">v1.0 &nbsp;&middot;&nbsp; Semantic Resume Matching</div>'
                 '</div>',
                 unsafe_allow_html=True,
             )
@@ -626,9 +643,7 @@ def render_header():
     with st.container():
         st.markdown(
             '<div class="page-header">'
-            '<h1 class="page-title">Resume Insight Engine'
-            '<span class="page-tag">AI-Powered</span>'
-            '</h1>'
+            '<h1 class="page-title">Resume Insight Engine</h1>'
             '<p class="page-subtitle">'
             'Paste a job description, upload candidate resumes, and get instant ranked results with skill gap analysis.'
             '</p>'
@@ -647,25 +662,25 @@ def render_empty_state():
             '<div class="gs-grid">'
 
             '<div class="gs-card">'
-            '<div class="gs-num">1</div>'
+            '<div class="gs-num">01</div>'
             '<p class="gs-step-title">Paste Job Description</p>'
             '<p class="gs-step-desc">Add the full job description text in the left panel.</p>'
             '</div>'
 
             '<div class="gs-card">'
-            '<div class="gs-num">2</div>'
+            '<div class="gs-num">02</div>'
             '<p class="gs-step-title">Upload Resumes</p>'
             '<p class="gs-step-desc">Upload one or more candidate PDF files.</p>'
             '</div>'
 
             '<div class="gs-card">'
-            '<div class="gs-num">3</div>'
+            '<div class="gs-num">03</div>'
             '<p class="gs-step-title">Run Analysis</p>'
             '<p class="gs-step-desc">Click the Run Analysis button to start.</p>'
             '</div>'
 
             '<div class="gs-card">'
-            '<div class="gs-num">4</div>'
+            '<div class="gs-num">04</div>'
             '<p class="gs-step-title">Review Results</p>'
             '<p class="gs-step-desc">View ranked scores, charts, and download reports.</p>'
             '</div>'
@@ -838,7 +853,12 @@ def render_results(results: List[Dict[str, Any]]):
                                 boosters=r["boosters"],
                                 draggers=r["draggers"],
                             )
-                        st.rerun()
+                        pdf_anchor = _pdf_download_anchor(
+                            st.session_state[state_key],
+                            f"report_{safe_name}.pdf",
+                            "Download Report PDF",
+                        )
+                        st.markdown(pdf_anchor, unsafe_allow_html=True)
                 else:
                     pdf_anchor = _pdf_download_anchor(
                         st.session_state[state_key],
