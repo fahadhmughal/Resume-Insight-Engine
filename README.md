@@ -114,3 +114,215 @@ When a section is not found in a resume (score of 0), its weight is redistribute
 ---
 
 ## Project Structure
+resume-insight-engine/
+├── app.py                          Main Streamlit application
+├── core/
+│   ├── init.py                 Package exports
+│   ├── parser.py                   PDF text extraction and validation
+│   ├── section_splitter.py         Resume section detection using header keywords
+│   ├── jd_extractor.py             Job description keyword extraction (KeyBERT)
+│   ├── scoring_engine.py           Per-section and composite scoring
+│   ├── embedding_engine.py         Sentence-Transformer embedding utilities
+│   └── explainer.py                Keyword-level similarity attribution
+├── services/
+│   ├── init.py
+│   └── report_generator.py         PDF report generation (fpdf2)
+├── tests/
+│   ├── init.py
+│   ├── test_parser.py              Parser and section splitter tests
+│   ├── test_scoring.py             Scoring engine tests
+│   ├── test_explainer.py           Explainer tests
+│   ├── test_jd_extractor.py        Keyword extraction tests
+│   ├── test_report.py              Report generator tests
+│   ├── generate_sample_resume.py   Generates a sample resume PDF for testing
+│   └── generate_test_resumes.py    Generates multiple diverse sample resumes
+├── assets/
+│   └── screenshots/                Application screenshots used in this README
+├── .streamlit/
+│   └── config.toml                 Streamlit theme and server configuration
+├── requirements.txt                Python dependencies
+├── packages.txt                    System packages for Streamlit Cloud
+├── runtime.txt                     Python version for Streamlit Cloud
+├── .gitignore
+└── README.md
+
+---
+
+## Prerequisites
+
+- **Python 3.11** or higher
+- **pip** (Python package installer)
+- **Git** (for cloning the repository)
+
+---
+
+## Installation
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/fahadhmughal/Resume-Insight-Engine.git
+cd Resume-Insight-Engine
+```
+
+### 2. Create a Virtual Environment
+
+```bash
+python -m venv venv
+```
+
+Activate the virtual environment:
+
+- **Windows:**
+```bash
+  venv\Scripts\activate
+```
+- **macOS/Linux:**
+```bash
+  source venv/bin/activate
+```
+
+### 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+This installs all required packages including:
+- Streamlit
+- pdfplumber
+- spaCy and the en_core_web_sm model
+- sentence-transformers
+- KeyBERT
+- plotly
+- fpdf2
+- pandas
+- scikit-learn
+
+The spaCy `en_core_web_sm` model is included directly in `requirements.txt` and will be installed automatically.
+
+---
+
+## Running the Application
+
+```bash
+streamlit run app.py
+```
+
+The application will start and open in your default browser at `http://localhost:8501`.
+
+To specify a custom port:
+
+```bash
+streamlit run app.py --server.port 8080
+```
+
+---
+
+## Usage Guide
+
+### Step 1: Paste a Job Description
+
+In the left sidebar, paste the full text of the job description you want to screen candidates against. Include required skills, tools, responsibilities, and qualifications for best results.
+
+### Step 2: Upload Resume PDFs
+
+Click the file uploader in the sidebar to upload one or more resume PDFs. Each file must be under 5 MB. Multiple files can be selected at once.
+
+### Step 3: Run Analysis
+
+Click the **Run Analysis** button. The application will:
+- Extract text from each PDF
+- Split each resume into sections
+- Extract keywords from the job description
+- Compute similarity scores for each section
+- Identify matched and missing skills
+- Rank candidates by composite score
+
+A progress bar shows the processing status.
+
+### Step 4: Review Results
+
+After analysis completes, you will see:
+
+- **Summary Metrics** -- Total candidates analysed, average score, highest score, and count of strong matches (70+)
+- **Ranked Results Table** -- All candidates ranked by composite score with per-section breakdowns
+- **Score Analysis Charts** -- Bar chart of candidate scores and horizontal bar chart of most common skill gaps across all candidates
+- **Candidate Details** -- Expandable sections for each candidate showing section scores, matched skills, and skill gaps
+- **Export Options** -- Download results as CSV or generate individual PDF reports for each candidate
+
+### Generating PDF Reports
+
+Inside each candidate's expanded detail view, click **Generate Report** to create a one-page PDF report. Once generated, a **Download Report PDF** link appears.
+
+---
+
+## Running Tests
+
+The `tests/` directory contains standalone test scripts for each module. Run them individually:
+
+```bash
+python tests/test_scoring.py
+python tests/test_explainer.py
+python tests/test_jd_extractor.py
+python tests/test_report.py
+python tests/test_parser.py
+```
+
+Each test script prints results and runs assertion checks, printing "All checks passed." on success.
+
+To generate sample resume PDFs for manual testing:
+
+```bash
+python tests/generate_sample_resume.py
+python tests/generate_test_resumes.py
+```
+
+---
+
+## Deployment
+
+### Streamlit Community Cloud
+
+This project is deployed on [Streamlit Community Cloud](https://streamlit.io/cloud):
+
+1. Push your code to a GitHub repository
+2. Go to [share.streamlit.io](https://share.streamlit.io)
+3. Connect your GitHub account and select the repository
+4. Set the main file path to `app.py`
+5. Deploy
+
+The following files are included for Streamlit Cloud compatibility:
+- `requirements.txt` -- Python dependencies
+- `packages.txt` -- System-level apt packages (libgomp1 for spaCy)
+- `runtime.txt` -- Python version specification (python-3.11)
+- `.streamlit/config.toml` -- Theme and server configuration
+
+
+## Configuration
+
+### Streamlit Theme
+
+The application theme is configured in `.streamlit/config.toml`:
+
+| Setting                   | Value       |
+|---------------------------|-------------|
+| Primary Color             | #1B2A4A     |
+| Background Color          | #FFFFFF     |
+| Secondary Background      | #F0F2F6     |
+| Text Color                | #31333F     |
+| Font                      | sans serif  |
+
+### Scoring Weights
+
+Section weights can be adjusted in `core/scoring_engine.py` by modifying the `SECTION_WEIGHTS` dictionary. Weights must sum to 1.0.
+
+### Keyword Extraction
+
+The number of keywords extracted from the job description can be adjusted by changing the `top_n` parameter in the `extract_jd_keywords` call within `app.py` (default: 20).
+
+---
+
+## License
+
+This project is provided as-is for educational and professional use.
