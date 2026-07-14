@@ -11,11 +11,17 @@ from sentence_transformers import SentenceTransformer
 _st_model = None
 
 
+def _get_hf_token() -> str | None:
+    """Return the Hugging Face token from the environment, if present."""
+    token = os.environ.get("HF_TOKEN")
+    return token.strip() if token and token.strip() else None
+
+
 def _load_model() -> SentenceTransformer:
     """Load (or return cached) SentenceTransformer model."""
     global _st_model
     if _st_model is None:
-        _st_model = SentenceTransformer("all-MiniLM-L6-v2")
+        _st_model = SentenceTransformer("all-MiniLM-L6-v2", token=_get_hf_token())
     return _st_model
 
 
@@ -25,7 +31,7 @@ try:
     @st.cache_resource
     def _load_model_streamlit() -> SentenceTransformer:
         """Streamlit-cached model loader."""
-        model = SentenceTransformer("all-MiniLM-L6-v2")
+        model = SentenceTransformer("all-MiniLM-L6-v2", token=_get_hf_token())
         try:
             import torch
 
