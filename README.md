@@ -114,10 +114,12 @@ When a section is not found in a resume (score of 0), its weight is redistribute
 ---
 
 ## Project Structure
+
+```
 resume-insight-engine/
 ├── app.py                          Main Streamlit application
 ├── core/
-│   ├── init.py                 Package exports
+│   ├── __init__.py                 Package exports
 │   ├── parser.py                   PDF text extraction and validation
 │   ├── section_splitter.py         Resume section detection using header keywords
 │   ├── jd_extractor.py             Job description keyword extraction (KeyBERT)
@@ -125,10 +127,10 @@ resume-insight-engine/
 │   ├── embedding_engine.py         Sentence-Transformer embedding utilities
 │   └── explainer.py                Keyword-level similarity attribution
 ├── services/
-│   ├── init.py
+│   ├── __init__.py
 │   └── report_generator.py         PDF report generation (fpdf2)
 ├── tests/
-│   ├── init.py
+│   ├── __init__.py
 │   ├── test_parser.py              Parser and section splitter tests
 │   ├── test_scoring.py             Scoring engine tests
 │   ├── test_explainer.py           Explainer tests
@@ -145,8 +147,7 @@ resume-insight-engine/
 ├── runtime.txt                     Python version for Streamlit Cloud
 ├── .gitignore
 └── README.md
-
----
+```
 
 ## Prerequisites
 
