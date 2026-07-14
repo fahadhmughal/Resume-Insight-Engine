@@ -43,19 +43,19 @@ Live demo: https://resume-insight-engine.streamlit.app/
 
 **Landing page**
 
-![Landing page](assets/screenshots/landing-page.png)
+![Landing page](assests/screenshots/landing-page.png)
 
 **Ranked results table**
 
-![Ranked results](assets/screenshots/ranked-results.png)
+![Ranked results](assests/screenshots/ranked-results.png)
 
 **Score analysis and skill gap charts**
 
-![Score analysis](assets/screenshots/score-analysis.png)
+![Score analysis](assests/screenshots/score-analysis.png)
 
 **Candidate detail view with matched skills and skill gaps**
 
-![Candidate details](assets/screenshots/candidate-details.png)
+![Candidate details](assests/screenshots/candidate-details.png)
 
 ---
 
