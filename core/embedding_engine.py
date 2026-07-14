@@ -25,7 +25,15 @@ try:
     @st.cache_resource
     def _load_model_streamlit() -> SentenceTransformer:
         """Streamlit-cached model loader."""
-        return SentenceTransformer("all-MiniLM-L6-v2")
+        model = SentenceTransformer("all-MiniLM-L6-v2")
+        try:
+            import torch
+
+            device_name = "cuda" if torch.cuda.is_available() else "cpu"
+            print(f"Resume Insight Engine: torch={torch.__version__}, device={device_name}")
+        except Exception as exc:
+            print(f"Resume Insight Engine: torch diagnostics unavailable: {exc}")
+        return model
 
 except ImportError:
     _load_model_streamlit = None
