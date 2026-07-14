@@ -8,6 +8,7 @@ os.environ.setdefault("USE_TF", "0")
 import io
 import csv
 import base64
+from threading import Thread
 from typing import List, Dict, Any
 
 import streamlit as st
@@ -16,7 +17,9 @@ import plotly.graph_objects as go
 
 from core.parser import extract_text_from_pdf, ParserError
 from core.section_splitter import split_into_sections
+from core.embedding_engine import get_sentence_transformer_model
 from core.jd_extractor import extract_jd_keywords
+from core.jd_extractor import get_keybert_model
 from core.scoring_engine import compute_section_scores, compute_final_score
 from core.explainer import get_score_contributors
 from services.report_generator import generate_candidate_report
@@ -376,6 +379,39 @@ def configure_page():
         .section-label  { font-size: 0.82rem; font-weight: 600; color: #374151; }
     </style>
     """, unsafe_allow_html=True)
+
+
+def warmup_models(timeout_seconds: int = 180) -> None:
+    """Load the shared embedding and KeyBERT models once per session."""
+
+    try:
+        from streamlit.runtime.scriptrunner import add_script_run_ctx, get_script_run_ctx
+    except Exception:
+        add_script_run_ctx = None
+        get_script_run_ctx = None
+
+    warmup_error: List[BaseException] = []
+
+    def _load() -> None:
+        try:
+            get_sentence_transformer_model()
+            get_keybert_model()
+        except BaseException as exc:
+            warmup_error.append(exc)
+
+    worker = Thread(target=_load, daemon=True)
+    if add_script_run_ctx is not None and get_script_run_ctx is not None:
+        add_script_run_ctx(worker, get_script_run_ctx())
+    worker.start()
+    worker.join(timeout_seconds)
+
+    if worker.is_alive():
+        raise TimeoutError(
+            f"Model loading did not finish within {timeout_seconds} seconds."
+        )
+
+    if warmup_error:
+        raise warmup_error[0]
 
 
 def score_css_class(score: float) -> str:
@@ -891,6 +927,20 @@ def main():
                 '<p class="validation-msg">Please upload at least one resume PDF before running analysis.</p>',
                 unsafe_allow_html=True,
             )
+            return
+
+        try:
+            with st.status("Loading models for the first run. This may take 1 to 3 minutes.", expanded=False) as status:
+                warmup_models(timeout_seconds=180)
+                status.update(label="Models loaded. Starting resume processing.", state="complete", expanded=False)
+        except TimeoutError:
+            st.error(
+                "Model loading timed out after 3 minutes. The app did not finish loading the shared language model in time. "
+                "This is usually a slow network or HuggingFace cache issue, not a resume-processing error."
+            )
+            return
+        except Exception as exc:
+            st.error(f"Model loading failed: {exc}")
             return
 
         with st.spinner("Processing resumes..."):

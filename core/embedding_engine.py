@@ -31,8 +31,8 @@ except ImportError:
     _load_model_streamlit = None
 
 
-def _get_model() -> SentenceTransformer:
-    """Return the SentenceTransformer model, preferring Streamlit cache."""
+def get_sentence_transformer_model() -> SentenceTransformer:
+    """Return the shared SentenceTransformer model, preferring Streamlit cache."""
     try:
         import streamlit.runtime.scriptrunner as _sr
         ctx = _sr.get_script_run_ctx()
@@ -49,11 +49,11 @@ def embed_text(text: str) -> np.ndarray:
     Returns a 1-D numpy array of shape (384,) for all-MiniLM-L6-v2.
     """
     if not text or not text.strip():
-        model = _get_model()
+        model = get_sentence_transformer_model()
         dim = model.get_sentence_embedding_dimension()
         return np.zeros(dim, dtype=np.float32)
 
-    model = _get_model()
+    model = get_sentence_transformer_model()
     embedding = model.encode(text, convert_to_numpy=True)
     return embedding.astype(np.float32)
 

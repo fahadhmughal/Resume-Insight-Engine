@@ -9,6 +9,8 @@ os.environ.setdefault("USE_TF", "0")
 
 from keybert import KeyBERT
 
+from core.embedding_engine import get_sentence_transformer_model
+
 _keybert_model = None
 
 
@@ -16,7 +18,7 @@ def _load_model() -> KeyBERT:
     """Load (or return cached) KeyBERT model with all-MiniLM-L6-v2."""
     global _keybert_model
     if _keybert_model is None:
-        _keybert_model = KeyBERT(model="all-MiniLM-L6-v2")
+        _keybert_model = KeyBERT(model=get_sentence_transformer_model())
     return _keybert_model
 
 
@@ -26,13 +28,13 @@ try:
     @st.cache_resource
     def _load_model_streamlit() -> KeyBERT:
         """Streamlit-cached model loader."""
-        return KeyBERT(model="all-MiniLM-L6-v2")
+        return KeyBERT(model=get_sentence_transformer_model())
 
 except ImportError:
     _load_model_streamlit = None
 
 
-def _get_model() -> KeyBERT:
+def get_keybert_model() -> KeyBERT:
     """Return the KeyBERT model, using Streamlit caching when available."""
     try:
         import streamlit.runtime.scriptrunner as _sr
@@ -79,7 +81,7 @@ def extract_jd_keywords(
     if not jd_text or not jd_text.strip():
         return []
 
-    model = _get_model()
+    model = get_keybert_model()
 
     raw_keywords = model.extract_keywords(
         jd_text,
